@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Responsive tables</title>
+    <meta name="viewport" content="width=device-width">
+    <!--[if lte IE 8]>
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body id="page">
+
+<div class="container">
+    <h1>Responsive tables</h1>
+
+    <p><strong>What does this thing do?</strong></p>
+    <ol>
+        <li>Checks when the table is larger then it's parent (parent created by jQuery)</li>
+        <li>Checks if there's table headers with the data-toggle attribute and if so removes the th with corresponding td with the lowest data-toggle first</li>
+        <li>If there are multiple th's with the same data-toggle value it removes the most right one first</li>
+        <li>When removed it saves the current width as "leave" value so when there's space again we can put the td's back</li>
+        <li>When there's a data-content="toggle" attribute on one of the th's it puts a toggle button to that td</li>
+        <li>When no data-content is found it add the toggle to the first td</li>
+        <li>When the toggle area is open and screen is being resized smaller it adds the td that is being hidden to the toggle area. In the right order</li>
+        <li>When toggle area is open and we are making our screen bigger it removes the values one at a time</li>
+        <li>When there are no more things to show in the toggle area it removes the area and the arrow</li>
+        <li>Works with multiple tables at a page</li>
+    </ol>
+
+
+    <table class="responsive-table">
+        <tr>
+            <th>Header1</th>
+            <th data-content="toggle">Header2</th>
+            <th>Header3</th>
+            <th data-toggle="1">Header4</th>
+            <th data-toggle="1">Header5</th>
+            <th data-toggle="2">Header6</th>
+            <th data-toggle="3">Header7</th>
+            <th>Header8</th>
+            <th>Header9</th>
+        </tr>
+        <tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td><img src="img/image.jpg" width="40" height="40" alt="test" /></td>
+            <td>Column_a_4</td>
+            <td><img src="img/image.jpg" width="40" height="40" alt="test" /></td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td><img src="img/image.jpg" width="40" height="40" alt="test" /></td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td><span style="color:red;">Red colored text</span></td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td><span style="display: inline-block;width:30px;height:30px;background:red"></span> Inline block next to me</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr><tr>
+            <td>Column_a_1 with more text than there should be</td>
+            <td>Column_a_2</td>
+            <td>Column_a_3</td>
+            <td>Column_a_4</td>
+            <td>Column_a_5</td>
+            <td>Column_a_6</td>
+            <td>Column_a_7</td>
+            <td>Column_a_8</td>
+            <td>Column_a_9</td>
+        </tr>
+        <tr>
+            <td>Column_b_1</td>
+            <td>Column_b_2 with more text than there should be</td>
+            <td>Column_b_3</td>
+            <td>Column_b_4</td>
+            <td>Column_b_5</td>
+            <td>Column_b_6</td>
+            <td>Column_b_7</td>
+            <td>Column_b_8</td>
+            <td>Column_b_9</td>
+        </tr>
+        <tr>
+            <td>Column_c_1</td>
+            <td>Column_c_2 with more text than there should be yes definatley</td>
+            <td>Column_c_3</td>
+            <td>Column_c_4</td>
+            <td>Column_c_5</td>
+            <td>Column_c_6</td>
+            <td>Column_c_7</td>
+            <td>Column_c_8</td>
+            <td>Column_c_9</td>
+        </tr>
+    </table>
+
+
+    <table class="responsive-table2">
+        <tr>
+            <th>Second1</th>
+            <th data-toggle="2">Second2</th>
+            <th>Second3</th>
+            <th>Second4</th>
+            <th data-toggle="5">Second5</th>
+            <th>Second6</th>
+            <th>Second7</th>
+        </tr>
+        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>        <tr>
+            <td>Content1Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>test</td>
+            <td>Content3Content3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+    </table>
+
+</div>
+
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/responsivetables.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.responsive-table').responsiveTable();
+        $('.responsive-table2').responsiveTable();
+    });
+</script>
+
+</body>
+</html>
