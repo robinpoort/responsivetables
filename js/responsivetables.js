@@ -40,8 +40,10 @@
                 i = 0,
                 headers = $element.find('th'),
                 toggle  = headers.filter('[data-content="toggle"]'),
-                toggle_index = toggle.length ? toggle[0].cellIndex : 0,
-                toggles_added = false;
+                toggle_index = toggle.length ? toggle[0].cellIndex : 0;
+
+            var cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')');
+            cells.prepend('<div style="display: none;" class="'+plugin.settings.togglebuttonclass+'">'+plugin.settings.togglebuttoncontent+'</div>');
 
             var buildOutput = function(parent) {
                 var output  = [],
@@ -120,13 +122,6 @@
 
                 var hide = [],
                     show = [];
-
-                if (!toggles_added) {
-                    var cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')');
-                    cells.prepend('<div style="display: none;" class="'+plugin.settings.togglebuttonclass+'">'+plugin.settings.togglebuttoncontent+'</div>');
-
-                    toggles_added = true;
-                }
 
                 $.each(columns, function(index, column) {
                     var width = $element.width(),
