@@ -18,11 +18,10 @@
                 togglebuttonclass: 'arrow',
                 togglebuttoncontent: '&raquo;'
             },
-            plugin = this;
+            plugin = this,
+            $element = $(element);
 
         plugin.settings = {};
-
-        var $element = $(element);
 
         plugin.init = function() {
 
@@ -46,19 +45,26 @@
                 i = 0;
 
             $element.find('th').each(function() {
-                prevwidth = $(this).outerWidth() + $(this).position().left;
-                var index = $element.find($(this)).index();
-                var leaveindex = $element.find($(this)).attr('data-toggle');
-                if ( leaveindex == undefined ) { leaveindex = "99" }
+                var $this = $(this),
+                    index = $element.find($this).index(),
+                    leaveindex = $element.find($this).attr('data-toggle');
+
+                prevwidth = $this.outerWidth() + $this.position().left;
+
+                if ( leaveindex == undefined ) {
+                    leaveindex = "99"
+                }
+
                 columns[i] = {
                     index: i+1,
                     name: ':nth-child('+(index+1)+')',
-                    width: $(this).outerWidth(),
+                    width: $this.outerWidth(),
                     leave: '',
                     leaveindex: parseInt(leaveindex, 10),
-                    left: $(this).position().left,
+                    left: $this.position().left,
                     sibling: 'td'+(index+1)
                 };
+
                 i++;
             });
 
@@ -164,79 +170,47 @@
                 // Set the new width after iteration
                 previouswindowwidth = currentwindowwidth;
 
+                var headers = $element.find('th');
+                var buildOutput = function(parent) {
+                    var output  = [],
+                        colspan = parent.find('td:visible').length,
+                        html;
+
+                    parent.find('td:hidden').each(function() {
+                        var $this = $(this),
+                            content = $this.html(), // Copy all html
+                            index   = $this.index(),
+                            title   = headers.eq(index).text(), // Only copy the text (so no sorting arrows etc.)
+                            klass   = 'td'+(index+1);
+
+                        output[index] = '<div class="'+klass+'"><strong>'+title+'</strong><br />'+content+'</div>';
+
+                        colspan++;
+                    });
+
+                    html = '<tr class="'+plugin.settings.duplicateclass+'"><td colspan="'+colspan+'">'+output.join('')+'</td></tr>';
+
+                    parent.after(html);
+                };
 
                 // Toggle area on mouse click
-                $('.'+plugin.settings.togglebuttonclass).each(function() {
-                    $(this).unbind().on('click', function() {
+                $element.on('click', '.'+plugin.settings.togglebuttonclass, function(event) {
+                    var $this = $(event.target),
+                        parent = $this.parents('tr');
 
-                        // Setting variables
-                        var parent = $(this).parent('td').parent('tr');
+                    if (parent.hasClass('open')) {
+                        parent.removeClass('open')
+                              .next(duplicaterow).remove();
 
-                        // If the area is open
-                        if ( parent.hasClass('open') ) {
-                            parent.next(duplicaterow).remove();
-                            parent.removeClass('open');
-                            $(this).removeClass('open');
+                        $this.removeClass('open');
 
-                        } else { // If the area is closed
+                    } else {
+                        buildOutput(parent);
 
-                            // Create the toggle area
-                            parent.after('<tr class="'+plugin.settings.duplicateclass+'"><td></td></tr>');
-                            var cloned = parent.next(duplicaterow);
-
-                            // Find hidden td's
-                            parent.find('td:hidden').each(function() {
-                                var thistd = $(this);
-                                addcontent(thistd, cloned, parent);
-                            });
-
-                            // Add the open class
-                            parent.addClass('open');
-                            $(this).addClass('open');
-                        }
-                    });
-                });
-            }
-
-
-            // The function for copying the content from the hidden td's to the toggle area. And put them in the right order
-            function addcontent(thistd, cloned, parent) {
-
-                // Content variables
-                var tdcontent = thistd.html(), // Copy all html
-                    thtitle = thistd.closest('table').find('th').eq(thistd.index()).text(), // Only copy the text (so no sorting arrows etc.)
-                    number = thistd.index() + 1;
-
-                if ( ! cloned.find('td'+number).length ) {
-
-                    // Copy the first item into the toggle area
-                    if ( ! cloned.find('td').hasClass('added') ) {
-                        // The content to add
-                        cloned.find('td').addClass('added').append('<div class="td'+number+'"><strong>'+thtitle+'</strong><br />'+tdcontent+'</div>');
-
-                    } else { // Check where to place the content of the current td in order
-
-                        var target = 0;
-
-                        // Get all cloned item index numbers
-                        cloned.find('[class*=td]').each(function() {
-                            target = $(this).attr('class').replace('td', '');
-                        });
-
-                        // If current number is higher place after() and else place before()
-                        if ( number > target ) {
-                            cloned.find('td').find('div[class*='+target+']').after('<div class="td'+number+'"><strong>'+thtitle+'</strong><br />'+tdcontent+'</div>');
-                        } else if ( number < target ) {
-                            cloned.find('td').find('div[class*='+target+']').before('<div class="td'+number+'"><strong>'+thtitle+'</strong><br />'+tdcontent+'</div>');
-                        }
-
+                        parent.addClass('open');
+                        $this.addClass('open');
                     }
-                }
-
-                // Setting the colspan
-                var colspan = parent.find('td:visible').length;
-                cloned.find('td').attr('colSpan', colspan);
-
+                });
             }
 
 
