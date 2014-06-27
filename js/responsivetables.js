@@ -27,16 +27,13 @@
 
             plugin.settings = $.extend({}, defaults, options);
 
-
             // Wrap the table in a div initially
             $element.wrap('<div class="' + plugin.settings.wrapperclass + '"></div>').css('position', plugin.settings.wrapperposition);
-
 
             // Setting vars
             var previous_window_width = $(window).width(),
                 wrapper = $element.parent('.' + plugin.settings.wrapperclass),
                 duplicaterow = '.' + plugin.settings.duplicateclass,
-                nextitem = '',
                 // Create the array
                 columns = [],
                 prevwidth = 0,
@@ -148,9 +145,11 @@
                             // Showing the siblings when toggle is open
                             var parent = $this.parent('tr');
 
-                            parent.next(duplicaterow).remove();
+                            if (parent.hasClass('open')) {
+                                parent.next(duplicaterow).remove();
 
-                            buildOutput(parent);
+                                buildOutput(parent);
+                            }
                         });
 
                         // Set the leave value
