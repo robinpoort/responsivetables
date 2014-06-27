@@ -33,21 +33,44 @@
 
 
             // Setting vars
-            var previouswindowwidth = $(window).width(),
+            var previous_window_width = $(window).width(),
                 wrapper = $element.parent('.' + plugin.settings.wrapperclass),
                 duplicaterow = '.' + plugin.settings.duplicateclass,
                 nextitem = '',
-                // Check if data-content="toggle" is set
-                toggleset = $element.find('tr > th[data-content="toggle"]').length,
                 // Create the array
                 columns = [],
                 prevwidth = 0,
-                i = 0;
+                i = 0,
+                headers = $element.find('th'),
+                toggle  = headers.filter('[data-content="toggle"]'),
+                toggle_index = toggle.length ? toggle[0].cellIndex : 0,
+                toggles_added = false;
 
-            $element.find('th').each(function() {
+            var buildOutput = function(parent) {
+                var output  = [],
+                    colspan = parent.find('td:visible').length,
+                    html;
+
+                parent.find('td:hidden').each(function() {
+                    var $this = $(this),
+                        content = $this.html(), // Copy all html
+                        index   = $this.index(),
+                        title   = headers.eq(index).text(), // Only copy the text (so no sorting arrows etc.)
+                        klass   = 'td'+(index+1);
+
+                    output[index] = '<div class="'+klass+'"><strong>'+title+'</strong><br />'+content+'</div>';
+
+                    colspan++;
+                });
+
+                html = '<tr class="'+plugin.settings.duplicateclass+'"><td colspan="'+colspan+'">'+output.join('')+'</td></tr>';
+
+                parent.after(html);
+            };
+
+            headers.each(function(index) {
                 var $this = $(this),
-                    index = $element.find($this).index(),
-                    leaveindex = $element.find($this).attr('data-toggle');
+                    leaveindex = $this.attr('data-toggle');
 
                 prevwidth = $this.outerWidth() + $this.position().left;
 
@@ -56,183 +79,127 @@
                 }
 
                 columns[i] = {
-                    index: i+1,
-                    name: ':nth-child('+(index+1)+')',
+                    index: index+1,
                     width: $this.outerWidth(),
                     leave: '',
                     leaveindex: parseInt(leaveindex, 10),
                     left: $this.position().left,
-                    sibling: 'td'+(index+1)
+                    sibling: 'td'+(index+1),
+                    enabled: true
                 };
 
                 i++;
             });
-
 
             // Reordering the array
             columns = columns.slice(0).reverse().sort(function(a, b) {
                 return a.leaveindex - b.leaveindex;
             });
 
+            // Toggle area on mouse click
+            $element.on('click', '.'+plugin.settings.togglebuttonclass, function(event) {
+                var $this = $(event.target),
+                    parent = $this.parents('tr');
+
+                if (parent.hasClass('open')) {
+                    parent.removeClass('open')
+                        .next(duplicaterow).remove();
+
+                    $this.removeClass('open');
+
+                } else {
+                    buildOutput(parent);
+
+                    parent.addClass('open');
+                    $this.addClass('open');
+                }
+            });
 
             // The actual function
             function responsivetable() {
 
                 // Setting vars inside function
-                var wrapperwidth = wrapper.outerWidth(),
-                    currentwindowwidth = $(window).width(),
-                    elementindex = 0;
+                var window_width = $(window).width();
 
+                var hide = [],
+                    show = [];
 
-                // Iterate through each item
-                $.each(columns, function(index, object) {
+                if (!toggles_added) {
+                    var cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')');
+                    cells.prepend('<div style="display: none;" class="'+plugin.settings.togglebuttonclass+'">'+plugin.settings.togglebuttoncontent+'</div>');
 
-                    // Setting vars
-                    var elem = $element.find('tr>' + object.name);
+                    toggles_added = true;
+                }
 
-                    // Loop through each elem separately
-                    $(elem).each(function() {
+                $.each(columns, function(index, column) {
+                    var width = $element.width(),
+                        wrapper_width = wrapper.outerWidth(),
+                        cells = $element.find('tr > :nth-child('+ column.index +')');
 
-                        if ( $element.width() > wrapperwidth && currentwindowwidth <= previouswindowwidth ) {
+                    if (column.enabled && width > wrapper_width && window_width <= previous_window_width) {
+                        hide.push(column.index);
 
-                            // Check if item is already hidden or not
-                            if ( !$(this).hasClass('hidden') ) {
+                        $element.find('.'+plugin.settings.togglebuttonclass).show();
 
-                                // Loop through each item separately again to make sure all td's are hidden before the window resizes
-                                $(elem).each(function() {
-                                    var toggleheader, toggleelements;
+                        cells.addClass('hidden');
+                        cells.each(function() {
+                            var $this = $(this);
 
-                                    // Set the toggle button to the right td
-                                    if ( toggleset == 1 ) {
-                                        toggleheader = $element.find('tr > th[data-content="toggle"]').index() + 1;
-                                    } else {
-                                        toggleheader = 1; // Just the first column
-                                    }
+                            // Showing the siblings when toggle is open
+                            var parent = $this.parent('tr');
 
-                                    toggleelements = $element.find('td:nth-child('+toggleheader+')');
+                            parent.next(duplicaterow).remove();
 
-                                    if ( !$element.find(toggleelements).find('.'+plugin.settings.togglebuttonclass).length ) {
-                                        $element.find(toggleelements).prepend('<div class="'+plugin.settings.togglebuttonclass+'">'+plugin.settings.togglebuttoncontent+'</div>');
-                                    }
+                            buildOutput(parent);
+                        });
 
-                                    // Showing the siblings when toggle is open
-                                    var parent = $(this).parent('tr'),
-                                        cloned = parent.next(duplicaterow);
+                        // Set the leave value
+                        column.enabled = false;
+                        column.leave = $element.outerWidth();
+                    }
+                    else if (!column.enabled && wrapper_width >= (column.leave + column.width - 10)) {
+                        show.push(column.index);
 
-                                    // Check if the toggle is opened and add content to toggle area
-                                    if ( cloned.length ) {
-                                        var thistd = $(this);
-                                        addcontent(thistd, cloned, parent);
-                                    }
-                                });
+                        // Remove the visible siblings
+                        $element.find('div.' + column.sibling).remove();
 
-                                // Hide the element
-                                $element.find('tr>:nth-child('+object.index+')').addClass('hidden');
+                        cells.removeClass('hidden');
+                        cells.each(function() {
+                            var $this = $(this);
 
-                                // Set the leave value
-                                object.leave = $element.outerWidth();
+                            // Hiding the siblings when toggle is open
+                            var parent = $this.parent('tr');
 
+                            // Fixing the colspan
+                            var colspan = parent.find('td:visible').length;
+                            parent.next(duplicaterow).find('td').attr('colSpan', colspan);
+
+                            // Hide the arrows and remove the toggle areas
+                            if (colspan === columns.length) {
+                                $element.find('.'+plugin.settings.togglebuttonclass).hide();
+                                parent.removeClass('open');
+                                $element.find(duplicaterow).remove();
                             }
-
-                        } else if ( wrapperwidth >= (object.leave + object.width - 10 ) ) {
-
-
-                            // Only check hidden elements
-                            if ( $(elem).hasClass('hidden') ) {
-
-                                // Hiding the siblings when toggle is open
-                                var parent = $(this).parent('tr');
-
-                                // Remove the hidden class and visible siblings
-                                $(this).removeClass('hidden');
-                                $element.find('.' + plugin.settings.duplicateclass + ' div.' + object.sibling).remove();
-
-                                // Fixing the colspan
-                                var colspan = $(this).parents('tr').find('td:visible').length;
-                                $(this).parents('tr').next(duplicaterow).find('td').attr('colSpan', colspan);
-
-                                // If it's the last element remove the arrow and the toggle area
-                                if ( elementindex == 0 ) {
-                                    $element.find($('.'+plugin.settings.togglebuttonclass)).remove();
-                                    parent.removeClass('open');
-                                    $element.find($(duplicaterow)).remove();
-                                }
-                            }
-                        }
-
-                    });
-
-                    nextitem = object.name;
-                    elementindex++;
-
+                        });
+                    }
                 });
 
                 // Set the new width after iteration
-                previouswindowwidth = currentwindowwidth;
-
-                var headers = $element.find('th');
-                var buildOutput = function(parent) {
-                    var output  = [],
-                        colspan = parent.find('td:visible').length,
-                        html;
-
-                    parent.find('td:hidden').each(function() {
-                        var $this = $(this),
-                            content = $this.html(), // Copy all html
-                            index   = $this.index(),
-                            title   = headers.eq(index).text(), // Only copy the text (so no sorting arrows etc.)
-                            klass   = 'td'+(index+1);
-
-                        output[index] = '<div class="'+klass+'"><strong>'+title+'</strong><br />'+content+'</div>';
-
-                        colspan++;
-                    });
-
-                    html = '<tr class="'+plugin.settings.duplicateclass+'"><td colspan="'+colspan+'">'+output.join('')+'</td></tr>';
-
-                    parent.after(html);
-                };
-
-                // Toggle area on mouse click
-                $element.on('click', '.'+plugin.settings.togglebuttonclass, function(event) {
-                    var $this = $(event.target),
-                        parent = $this.parents('tr');
-
-                    if (parent.hasClass('open')) {
-                        parent.removeClass('open')
-                              .next(duplicaterow).remove();
-
-                        $this.removeClass('open');
-
-                    } else {
-                        buildOutput(parent);
-
-                        parent.addClass('open');
-                        $this.addClass('open');
-                    }
-                });
+                previous_window_width = window_width;
             }
-
 
             responsivetable();
 
-
-            var debouncer = function(func, timeout) {
-                var id = null;
-                timeout = timeout || 100;
-                return function() {
-                    var self = this, args = arguments;
-                    clearTimeout(id);
-                    id = setTimeout(function() {
-                        func.apply(self, Array.prototype.slice.call(args));
-                    }, timeout);
+            var timeout_id = null,
+                onResize = function() {
+                    clearTimeout(timeout_id);
+                    timeout_id = setTimeout(function() {
+                        responsivetable();
+                    }, 100);
                 };
-            };
 
             // Run again on window resize
-            $(window).on('resize', debouncer(function() {
-                responsivetable();
-            }));
+            $(window).on('resize', onResize);
 
         };
 
