@@ -20,10 +20,9 @@
             },
             plugin = this;
 
-        plugin.settings = {}
+        plugin.settings = {};
 
-        var $element = $(element),
-            element = element;
+        var $element = $(element);
 
         plugin.init = function() {
 
@@ -38,17 +37,14 @@
             var previouswindowwidth = $(window).width(),
                 wrapper = $element.parent('.' + plugin.settings.wrapperclass),
                 duplicaterow = '.' + plugin.settings.duplicateclass,
-                nextitem = '';
-
-
-            // Check if data-content="toggle" is set
-            var toggleset = $element.find('tr > th[data-content="toggle"]').length;
-
-
-            // Create the array
-            var columns = [],
+                nextitem = '',
+                // Check if data-content="toggle" is set
+                toggleset = $element.find('tr > th[data-content="toggle"]').length,
+                // Create the array
+                columns = [],
                 prevwidth = 0,
                 i = 0;
+
             $element.find('th').each(function() {
                 prevwidth = $(this).outerWidth() + $(this).position().left;
                 var index = $element.find($(this)).index();
@@ -59,7 +55,7 @@
                     name: ':nth-child('+(index+1)+')',
                     width: $(this).outerWidth(),
                     leave: '',
-                    leaveindex: parseInt(leaveindex),
+                    leaveindex: parseInt(leaveindex, 10),
                     left: $(this).position().left,
                     sibling: 'td'+(index+1)
                 };
@@ -68,7 +64,7 @@
 
 
             // Reordering the array
-            var columns = columns.slice(0).reverse().sort(function(a, b) {
+            columns = columns.slice(0).reverse().sort(function(a, b) {
                 return a.leaveindex - b.leaveindex;
             });
 
@@ -86,7 +82,7 @@
                 $.each(columns, function(index, object) {
 
                     // Setting vars
-                    var elem = $element.find('tr>' + columns[index].name);
+                    var elem = $element.find('tr>' + object.name);
 
                     // Loop through each elem separately
                     $(elem).each(function() {
@@ -98,15 +94,16 @@
 
                                 // Loop through each item separately again to make sure all td's are hidden before the window resizes
                                 $(elem).each(function() {
+                                    var toggleheader, toggleelements;
 
                                     // Set the toggle button to the right td
                                     if ( toggleset == 1 ) {
-                                        var toggleheader = $element.find('tr > th[data-content="toggle"]').index() + 1;
+                                        toggleheader = $element.find('tr > th[data-content="toggle"]').index() + 1;
                                     } else {
-                                        var toggleheader = 1; // Just the first column
+                                        toggleheader = 1; // Just the first column
                                     }
 
-                                    var toggleelements = $element.find('td:nth-child('+toggleheader+')');
+                                    toggleelements = $element.find('td:nth-child('+toggleheader+')');
 
                                     if ( !$element.find(toggleelements).find('.'+plugin.settings.togglebuttonclass).length ) {
                                         $element.find(toggleelements).prepend('<div class="'+plugin.settings.togglebuttonclass+'">'+plugin.settings.togglebuttoncontent+'</div>');
@@ -124,26 +121,25 @@
                                 });
 
                                 // Hide the element
-                                $element.find('tr>:nth-child('+columns[index].index+')').addClass('hidden');
+                                $element.find('tr>:nth-child('+object.index+')').addClass('hidden');
 
                                 // Set the leave value
-                                columns[index].leave = $element.outerWidth();
+                                object.leave = $element.outerWidth();
 
                             }
 
-                        } else if ( wrapperwidth >= (columns[index].leave + columns[index].width - 10 ) ) {
+                        } else if ( wrapperwidth >= (object.leave + object.width - 10 ) ) {
 
 
                             // Only check hidden elements
                             if ( $(elem).hasClass('hidden') ) {
 
                                 // Hiding the siblings when toggle is open
-                                var parent = $(this).parent('tr'),
-                                    cloned = parent.next(duplicaterow);
+                                var parent = $(this).parent('tr');
 
                                 // Remove the hidden class and visible siblings
                                 $(this).removeClass('hidden');
-                                $element.find('.' + plugin.settings.duplicateclass + ' div.' + columns[index].sibling).remove();
+                                $element.find('.' + plugin.settings.duplicateclass + ' div.' + object.sibling).remove();
 
                                 // Fixing the colspan
                                 var colspan = $(this).parents('tr').find('td:visible').length;
@@ -160,7 +156,7 @@
 
                     });
 
-                    nextitem = columns[index].name;
+                    nextitem = object.name;
                     elementindex++;
 
                 });
@@ -260,18 +256,15 @@
             };
 
             // Run again on window resize
-            $(window).on('resize', debouncer(function(event) {
-                // Get the window width or get the body width as a fallback
-                var width = event.target.innerWidth || $('body').width();
-                // Functions
+            $(window).on('resize', debouncer(function() {
                 responsivetable();
             }));
 
-        }
+        };
 
         plugin.init();
 
-    }
+    };
 
 
     // add the plugin to the jQuery.fn object
