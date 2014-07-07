@@ -58,8 +58,6 @@
                         klass   = 'td'+(index+1);
 
                     output[index] = '<div class="'+klass+'"><strong>'+title+'</strong><br />'+content+'</div>';
-
-                    colspan++;
                 });
 
                 html = '<tr class="'+plugin.settings.duplicateclass+'"><td colspan="'+colspan+'">'+output.join('')+'</td></tr>';
@@ -148,36 +146,32 @@
 
                         column.enabled = true;
                     }
-
-                    // Recreate the toggle area output
-                    if (hide.length) {
-                        var open = $element.find('tr.open');
-                        open.each(function() {
-                            var row = $(this);
-                            row.next(duplicaterow).remove();
-
-                            buildOutput(row);
-                        });
-                    }
-
-                    // Set the colspan and hide the toggle area if possible
-                    if (show.length) {
-                        var boxes = $element.find('tr.'+plugin.settings.duplicateclass);
-                        boxes.each(function() {
-                            var $this = $(this),
-                                $tr = $(this).prev('tr'),
-                                colspan = $tr.find('td:visible').length;
-
-                            if (colspan === columns.length) {
-                                $element.find('.'+plugin.settings.togglebuttonclass).removeClass('open').hide();
-                                $tr.removeClass('open');
-                                $this.remove();
-                            } else {
-                                $this.attr('colSpan', colspan);
-                            }
-                        });
-                    }
                 });
+
+                // Recreate the toggle area output
+                if (hide.length) {
+                    var open = $element.find('tr.open');
+                    open.each(function() {
+                        var row = $(this);
+                        row.next(duplicaterow).remove();
+
+                        buildOutput(row);
+                    });
+                }
+
+                // Set the colspan and hide the toggle area if possible
+                if (show.length) {
+                    var boxes = $element.find('tr.'+plugin.settings.duplicateclass),
+                        colspan = headers.filter(':visible').length;
+
+                    if (colspan === columns.length) {
+                        $element.find('.'+plugin.settings.togglebuttonclass).removeClass('open').hide();
+                        $element.children('tr').removeClass('open');
+                        boxes.remove();
+                    } else {
+                        boxes.children('td').attr('colSpan', colspan);
+                    }
+                }
 
                 // Set the new width after iteration
                 previous_window_width = window_width;
