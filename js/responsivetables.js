@@ -15,10 +15,12 @@
                     'class': 'tablewrapper',
                     'position': 'relative'
                 },
-                toggle_box: 'toggle_box',
+                toggle_box: {
+                    'class': 'toggle_box'
+                },
                 toggle: {
                     'class': 'arrow',
-                    text:  '&raquo;'
+                    text: '&raquo;'
                 }
             },
             plugin = this,
@@ -41,7 +43,7 @@
                 output[index] = '<div class="'+klass+'"><strong>'+title+'</strong><br />'+content+'</div>';
             });
 
-            html = '<tr class="'+plugin.settings.toggle_box+'"><td colspan="'+colspan+'">'+output.join('')+'</td></tr>';
+            html = '<tr class="'+plugin.settings.toggle_box['class']+'"><td colspan="'+colspan+'">'+output.join('')+'</td></tr>';
 
             row.after(html);
         };
@@ -70,7 +72,7 @@
                 headers = $element.find('th'),
                 toggle  = headers.filter('[data-content="toggle"]'),
                 toggle_index = toggle.length ? toggle[0].cellIndex : 0,
-                toggle_box = '.' + plugin.settings.toggle_box,
+                toggle_box = '.' + plugin.settings.toggle_box['class'],
                 cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')'),
                 i = 0,
                 columns = [],
