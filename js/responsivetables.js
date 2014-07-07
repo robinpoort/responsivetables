@@ -77,7 +77,7 @@
                 toggles_added = false,
                 showToggles = function() {
                     if (toggles_added === false) {
-                        var toggle  = headers.filter('[data-content="toggle"]'),
+                        var toggle  = headers.filter('[data-has-toggle]'),
                             toggle_index = toggle.length ? toggle[0].cellIndex : 0,
                             cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')');
 
@@ -91,33 +91,30 @@
                 hideToggles = function() {
                     $element.find('.'+plugin.settings.toggle['class']).removeClass('open').hide();
                 },
-                i = 0,
                 columns = [];
 
             headers.each(function(index) {
                 var $this = $(this),
-                    leaveindex = $this.attr('data-toggle');
+                    order = $this.attr('data-has-toggle') ? '1000' : $this.attr('data-toggle-order');
 
-                if ( leaveindex == undefined ) {
-                    leaveindex = "99"
+                if (order == undefined) {
+                    order = '999';
                 }
 
-                columns[i] = {
+                columns.push({
                     index: index+1,
                     width: $this.outerWidth(),
                     leave: '',
-                    leaveindex: parseInt(leaveindex, 10),
+                    order: parseInt(order, 10),
                     left: $this.position().left,
                     sibling: 'td'+(index+1),
                     enabled: true
-                };
-
-                i++;
+                });
             });
 
             // Reordering the array
             columns = columns.slice(0).reverse().sort(function(a, b) {
-                return a.leaveindex - b.leaveindex;
+                return a.order - b.order;
             });
 
             // Toggle area on mouse click

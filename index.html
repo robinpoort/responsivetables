@@ -18,11 +18,11 @@
     <p><strong>What does this thing do?</strong></p>
     <ol>
         <li>Checks when the table is larger then it's parent (parent created by jQuery)</li>
-        <li>Checks if there's table headers with the data-toggle attribute and if so removes the th with corresponding td with the lowest data-toggle first</li>
-        <li>If there are multiple th's with the same data-toggle value it removes the most right one first</li>
+        <li>Checks if there's table headers with the data-toggle-order attribute and if so removes the th with corresponding td with the lowest data-toggle-order first</li>
+        <li>If there are multiple th's with the same data-toggle-order value it removes the most right one first</li>
         <li>When removed it saves the current width as "leave" value so when there's space again we can put the td's back</li>
-        <li>When there's a data-content="toggle" attribute on one of the th's it puts a toggle button to that td</li>
-        <li>When no data-content is found it add the toggle to the first td</li>
+        <li>When there's a data-has-toggle attribute on one of the th's it puts a toggle button to that td</li>
+        <li>When no data-has-toggle is found it adds the toggle to the first td</li>
         <li>When the toggle area is open and screen is being resized smaller it adds the td that is being hidden to the toggle area. In the right order</li>
         <li>When toggle area is open and we are making our screen bigger it removes the values one at a time</li>
         <li>When there are no more things to show in the toggle area it removes the area and the arrow</li>
@@ -33,12 +33,12 @@
     <table class="responsive-table">
         <tr>
             <th>Header1</th>
-            <th data-content="toggle">Header2</th>
+            <th data-has-toggle>Header2</th>
             <th>Header3</th>
-            <th data-toggle="1">Header4</th>
-            <th data-toggle="1">Header5</th>
-            <th data-toggle="2">Header6</th>
-            <th data-toggle="3">Header7</th>
+            <th data-toggle-order="1">Header4</th>
+            <th data-toggle-order="1">Header5</th>
+            <th data-toggle-order="2">Header6</th>
+            <th data-toggle-order="3">Header7</th>
             <th>Header8</th>
             <th>Header9</th>
         </tr>
@@ -561,10 +561,10 @@
     <table class="responsive-table2">
         <tr>
             <th>Second1</th>
-            <th data-toggle="2">Second2</th>
+            <th data-toggle-order="2">Second2</th>
             <th>Second3</th>
             <th>Second4</th>
-            <th data-toggle="5">Second5</th>
+            <th data-toggle-order="5">Second5</th>
             <th>Second6</th>
             <th>Second7</th>
         </tr>
