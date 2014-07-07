@@ -95,7 +95,7 @@
 
             headers.each(function(index) {
                 var $this = $(this),
-                    order = $this.attr('data-has-toggle') ? '1000' : $this.attr('data-toggle-order');
+                    order = $this.is('[data-has-toggle]') ? '1000' : $this.attr('data-toggle-order');
 
                 if (order == undefined) {
                     order = '999';
