@@ -70,15 +70,29 @@
             var previous_window_width = $(window).width(),
                 wrapper = $element.parent('.' + plugin.settings.wrapper['class']),
                 headers = $element.find('th'),
-                toggle  = headers.filter('[data-content="toggle"]'),
-                toggle_index = toggle.length ? toggle[0].cellIndex : 0,
                 toggle_box = '.' + plugin.settings.toggle_box['class'],
-                cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')'),
-                i = 0,
-                columns = [],
                 buildOutput = function(row) {
                     return plugin.buildOutput(row, headers);
-                };
+                },
+                toggles_added = false,
+                showToggles = function() {
+                    if (toggles_added === false) {
+                        var toggle  = headers.filter('[data-content="toggle"]'),
+                            toggle_index = toggle.length ? toggle[0].cellIndex : 0,
+                            cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')');
+
+                        cells.prepend('<div style="display: none;" class="'+plugin.settings.toggle['class']+'">'+plugin.settings.toggle.text+'</div>');
+
+                        toggles_added = true;
+                    }
+
+                    $element.find('.'+plugin.settings.toggle['class']).show();
+                },
+                hideToggles = function() {
+                    $element.find('.'+plugin.settings.toggle['class']).removeClass('open').hide();
+                },
+                i = 0,
+                columns = [];
 
             headers.each(function(index) {
                 var $this = $(this),
@@ -105,8 +119,6 @@
             columns = columns.slice(0).reverse().sort(function(a, b) {
                 return a.leaveindex - b.leaveindex;
             });
-
-            cells.prepend('<div style="display: none;" class="'+plugin.settings.toggle['class']+'">'+plugin.settings.toggle.text+'</div>');
 
             // Toggle area on mouse click
             $element.on('click', '.'+plugin.settings.toggle['class'], function(event) {
@@ -143,8 +155,6 @@
                     if (column.enabled && width > wrapper_width && window_width <= previous_window_width) {
                         hide.push(column.index);
 
-                        $element.find('.'+plugin.settings.toggle['class']).show();
-
                         cells.addClass('hidden');
 
                         // Set the leave value
@@ -165,9 +175,12 @@
 
                 // Recreate the toggle area output
                 if (hide.length) {
+                    showToggles();
+
                     var open = $element.find('tr.open');
                     open.each(function() {
                         var row = $(this);
+                        row.find('.'+plugin.settings.toggle['class']).addClass('open');
                         row.next(toggle_box).remove();
 
                         buildOutput(row);
@@ -180,7 +193,7 @@
                         colspan = headers.filter(':visible').length;
 
                     if (colspan === columns.length) {
-                        $element.find('.'+plugin.settings.toggle['class']).removeClass('open').hide();
+                        hideToggles();
                         $element.children('tr').removeClass('open');
                         boxes.remove();
                     } else {
