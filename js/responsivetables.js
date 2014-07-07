@@ -10,66 +10,77 @@
 (function($) {
 
     $.responsiveTable = function(element, options) {
-
         var defaults = {
-                wrapperclass: 'tablewrapper',
-                wrapperposition: 'relative',
-                duplicateclass: 'duplicaterow',
-                togglebuttonclass: 'arrow',
-                togglebuttoncontent: '&raquo;'
+                wrapper: {
+                    'class': 'tablewrapper',
+                    'position': 'relative'
+                },
+                toggle_box: 'toggle_box',
+                toggle: {
+                    'class': 'arrow',
+                    text:  '&raquo;'
+                }
             },
             plugin = this,
             $element = $(element);
 
         plugin.settings = {};
 
-        plugin.init = function() {
+        plugin.buildOutput = function(row, headers) {
+            var output  = [],
+                colspan = row.find('td:visible').length,
+                html;
 
+            row.find('td:hidden').each(function() {
+                var $this = $(this),
+                    content = $this.html(), // Copy all html
+                    index   = $this.index(),
+                    title   = headers.eq(index).text(), // Only copy the text (so no sorting arrows etc.)
+                    klass   = 'td'+(index+1);
+
+                output[index] = '<div class="'+klass+'"><strong>'+title+'</strong><br />'+content+'</div>';
+            });
+
+            html = '<tr class="'+plugin.settings.toggle_box+'"><td colspan="'+colspan+'">'+output.join('')+'</td></tr>';
+
+            row.after(html);
+        };
+
+        plugin.debounce = function(func, wait) {
+            var timeout;
+            return function() {
+                var context = this, args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(function() {
+                    timeout = null;
+                    func.apply(context, args);
+                }, wait);
+            };
+        };
+
+        plugin.init = function() {
             plugin.settings = $.extend({}, defaults, options);
 
             // Wrap the table in a div initially
-            $element.wrap('<div class="' + plugin.settings.wrapperclass + '"></div>').css('position', plugin.settings.wrapperposition);
+            $element.wrap('<div class="' + plugin.settings.wrapper['class'] + '"></div>').css('position', plugin.settings.wrapper.position);
 
             // Setting vars
             var previous_window_width = $(window).width(),
-                wrapper = $element.parent('.' + plugin.settings.wrapperclass),
-                duplicaterow = '.' + plugin.settings.duplicateclass,
-                // Create the array
-                columns = [],
-                prevwidth = 0,
-                i = 0,
+                wrapper = $element.parent('.' + plugin.settings.wrapper['class']),
                 headers = $element.find('th'),
                 toggle  = headers.filter('[data-content="toggle"]'),
-                toggle_index = toggle.length ? toggle[0].cellIndex : 0;
-
-            var cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')');
-            cells.prepend('<div style="display: none;" class="'+plugin.settings.togglebuttonclass+'">'+plugin.settings.togglebuttoncontent+'</div>');
-
-            var buildOutput = function(parent) {
-                var output  = [],
-                    colspan = parent.find('td:visible').length,
-                    html;
-
-                parent.find('td:hidden').each(function() {
-                    var $this = $(this),
-                        content = $this.html(), // Copy all html
-                        index   = $this.index(),
-                        title   = headers.eq(index).text(), // Only copy the text (so no sorting arrows etc.)
-                        klass   = 'td'+(index+1);
-
-                    output[index] = '<div class="'+klass+'"><strong>'+title+'</strong><br />'+content+'</div>';
-                });
-
-                html = '<tr class="'+plugin.settings.duplicateclass+'"><td colspan="'+colspan+'">'+output.join('')+'</td></tr>';
-
-                parent.after(html);
-            };
+                toggle_index = toggle.length ? toggle[0].cellIndex : 0,
+                toggle_box = '.' + plugin.settings.toggle_box,
+                cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')'),
+                i = 0,
+                columns = [],
+                buildOutput = function(row) {
+                    return plugin.buildOutput(row, headers);
+                };
 
             headers.each(function(index) {
                 var $this = $(this),
                     leaveindex = $this.attr('data-toggle');
-
-                prevwidth = $this.outerWidth() + $this.position().left;
 
                 if ( leaveindex == undefined ) {
                     leaveindex = "99"
@@ -93,14 +104,16 @@
                 return a.leaveindex - b.leaveindex;
             });
 
+            cells.prepend('<div style="display: none;" class="'+plugin.settings.toggle['class']+'">'+plugin.settings.toggle.text+'</div>');
+
             // Toggle area on mouse click
-            $element.on('click', '.'+plugin.settings.togglebuttonclass, function(event) {
+            $element.on('click', '.'+plugin.settings.toggle['class'], function(event) {
                 var $this = $(event.target),
                     parent = $this.parents('tr');
 
                 if (parent.hasClass('open')) {
                     parent.removeClass('open')
-                        .next(duplicaterow).remove();
+                        .next(toggle_box).remove();
 
                     $this.removeClass('open');
 
@@ -113,7 +126,7 @@
             });
 
             // The actual function
-            function responsivetable() {
+            function toggleCells() {
                 // Setting vars inside function
                 var window_width = $(window).width();
 
@@ -128,7 +141,7 @@
                     if (column.enabled && width > wrapper_width && window_width <= previous_window_width) {
                         hide.push(column.index);
 
-                        $element.find('.'+plugin.settings.togglebuttonclass).show();
+                        $element.find('.'+plugin.settings.toggle['class']).show();
 
                         cells.addClass('hidden');
 
@@ -153,7 +166,7 @@
                     var open = $element.find('tr.open');
                     open.each(function() {
                         var row = $(this);
-                        row.next(duplicaterow).remove();
+                        row.next(toggle_box).remove();
 
                         buildOutput(row);
                     });
@@ -161,11 +174,11 @@
 
                 // Set the colspan and hide the toggle area if possible
                 if (show.length) {
-                    var boxes = $element.find('tr.'+plugin.settings.duplicateclass),
+                    var boxes = $element.find('tr'+toggle_box),
                         colspan = headers.filter(':visible').length;
 
                     if (colspan === columns.length) {
-                        $element.find('.'+plugin.settings.togglebuttonclass).removeClass('open').hide();
+                        $element.find('.'+plugin.settings.toggle['class']).removeClass('open').hide();
                         $element.children('tr').removeClass('open');
                         boxes.remove();
                     } else {
@@ -177,27 +190,14 @@
                 previous_window_width = window_width;
             }
 
-            responsivetable();
-
-            function debounce(func, wait, immediate) {
-                var timeout;
-                return function() {
-                    var context = this, args = arguments;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(function() {
-                        timeout = null;
-                        func.apply(context, args);
-                    }, wait);
-                };
-            }
+            toggleCells();
 
             // Run again on window resize
-            $(window).on('resize', debounce(responsivetable, 200));
+            $(window).on('resize', plugin.debounce(toggleCells, 200));
 
         };
 
         plugin.init();
-
     };
 
 
