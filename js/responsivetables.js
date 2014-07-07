@@ -116,7 +116,6 @@
 
             // The actual function
             function responsivetable() {
-
                 // Setting vars inside function
                 var window_width = $(window).width();
 
@@ -134,18 +133,6 @@
                         $element.find('.'+plugin.settings.togglebuttonclass).show();
 
                         cells.addClass('hidden');
-                        cells.each(function() {
-                            var $this = $(this);
-
-                            // Showing the siblings when toggle is open
-                            var parent = $this.parent('tr');
-
-                            if (parent.hasClass('open')) {
-                                parent.next(duplicaterow).remove();
-
-                                buildOutput(parent);
-                            }
-                        });
 
                         // Set the leave value
                         column.enabled = false;
@@ -158,21 +145,35 @@
                         $element.find('div.' + column.sibling).remove();
 
                         cells.removeClass('hidden');
-                        cells.each(function() {
-                            var $this = $(this);
 
-                            // Hiding the siblings when toggle is open
-                            var parent = $this.parent('tr');
+                        column.enabled = true;
+                    }
 
-                            // Fixing the colspan
-                            var colspan = parent.find('td:visible').length;
-                            parent.next(duplicaterow).find('td').attr('colSpan', colspan);
+                    // Recreate the toggle area output
+                    if (hide.length) {
+                        var open = $element.find('tr.open');
+                        open.each(function() {
+                            var row = $(this);
+                            row.next(duplicaterow).remove();
 
-                            // Hide the arrows and remove the toggle areas
+                            buildOutput(row);
+                        });
+                    }
+
+                    // Set the colspan and hide the toggle area if possible
+                    if (show.length) {
+                        var boxes = $element.find('tr.'+plugin.settings.duplicateclass);
+                        boxes.each(function() {
+                            var $this = $(this),
+                                $tr = $(this).prev('tr'),
+                                colspan = $tr.find('td:visible').length;
+
                             if (colspan === columns.length) {
-                                $element.find('.'+plugin.settings.togglebuttonclass).hide();
-                                parent.removeClass('open');
-                                $element.find(duplicaterow).remove();
+                                $element.find('.'+plugin.settings.togglebuttonclass).removeClass('open').hide();
+                                $tr.removeClass('open');
+                                $this.remove();
+                            } else {
+                                $this.attr('colSpan', colspan);
                             }
                         });
                     }
@@ -184,16 +185,20 @@
 
             responsivetable();
 
-            var timeout_id = null,
-                onResize = function() {
-                    clearTimeout(timeout_id);
-                    timeout_id = setTimeout(function() {
-                        responsivetable();
-                    }, 100);
+            function debounce(func, wait, immediate) {
+                var timeout;
+                return function() {
+                    var context = this, args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function() {
+                        timeout = null;
+                        func.apply(context, args);
+                    }, wait);
                 };
+            }
 
             // Run again on window resize
-            $(window).on('resize', onResize);
+            $(window).on('resize', debounce(responsivetable, 200));
 
         };
 
