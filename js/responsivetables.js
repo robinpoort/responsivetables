@@ -41,7 +41,11 @@
                     title   = headers.eq(index).text(), // Only copy the text (so no sorting arrows etc.)
                     klass   = 'td'+(index+1);
 
-                output[index] = '<div class="'+klass+'"><strong>'+title+'</strong><br />'+content+'</div>';
+                if ( title != '' ) {
+                    output[index] = '<div class="'+klass+'"><strong>'+title+'</strong><br />'+content+'</div>';
+                } else {
+                    output[index] = '<div class="'+klass+'">'+content+'</div>';
+                }
             });
 
             html = '<tr class="'+plugin.settings.toggle_box['class']+'"><td colspan="'+colspan+'">'+output.join('')+'</td></tr>';
