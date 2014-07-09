@@ -19,6 +19,7 @@
                     'class': 'rttoggle_box'
                 },
                 toggle: {
+                    'element': '',
                     'class': 'rttoggler',
                     'openclass': 'rtopen',
                     'text': '&raquo;'
@@ -84,9 +85,9 @@
                     if (toggles_added === false) {
                         var toggle  = headers.filter('[data-has-toggle]'),
                             toggle_index = toggle.length ? toggle[0].cellIndex : 0,
-                            cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')');
+                            cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +') '+plugin.settings.toggle['element']);
 
-                        cells.prepend('<div style="display: none;" class="'+plugin.settings.toggle['class']+'">'+plugin.settings.toggle.text+'</div>');
+                        cells.prepend('<div class="'+plugin.settings.toggle['class']+'">'+plugin.settings.toggle.text+'</div>');
 
                         toggles_added = true;
                     }
