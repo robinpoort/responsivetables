@@ -145,7 +145,8 @@
             // The actual function
             function toggleCells() {
                 // Setting vars inside function
-                var window_width = $(window).width();
+                var window_width = $(window).width(),
+                    visibleheaders = headers.filter(':visible').length;
 
                 var hide = [],
                     show = [];
@@ -155,7 +156,7 @@
                         wrapper_width = wrapper.outerWidth(),
                         cells = $element.find('tr > :nth-child('+ column.index +')');
 
-                    if (column.enabled && width > wrapper_width && window_width <= previous_window_width) {
+                    if (column.enabled && width > wrapper_width && window_width <= previous_window_width && visibleheaders > 1) {
                         hide.push(column.index);
 
                         cells.hide();
@@ -175,6 +176,11 @@
                         column.enabled = true;
                     }
                 });
+
+                // Set wrapper to overflow when there's only one column left
+                if (visibleheaders==1) {
+                    wrapper.css('overflow', 'auto');
+                }
 
                 // Recreate the toggle area output
                 if (hide.length) {
