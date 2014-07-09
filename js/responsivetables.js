@@ -12,15 +12,16 @@
     $.responsiveTable = function(element, options) {
         var defaults = {
                 wrapper: {
-                    'class': 'tablewrapper',
+                    'class': 'rttablewrapper',
                     'position': 'relative'
                 },
                 toggle_box: {
-                    'class': 'toggle_box'
+                    'class': 'rttoggle_box'
                 },
                 toggle: {
-                    'class': 'arrow',
-                    text: '&raquo;'
+                    'class': 'rttoggler',
+                    'openclass': 'rtopen',
+                    'text': '&raquo;'
                 }
             },
             plugin = this,
@@ -63,8 +64,8 @@
         plugin.init = function() {
             plugin.settings = $.extend({}, defaults, options);
 
-            // Wrap the table in a div initially
-            $element.wrap('<div class="' + plugin.settings.wrapper['class'] + '"></div>').css('position', plugin.settings.wrapper.position);
+            // Wrap the table in a div initially and setting necessary table styles
+            $element.wrap('<div class="' + plugin.settings.wrapper['class'] + '" style="overflow:hidden;"></div>').css({'position': plugin.settings.wrapper.position, 'width': '100%'});
 
             // Setting vars
             var previous_window_width = $(window).width(),
@@ -89,7 +90,7 @@
                     $element.find('.'+plugin.settings.toggle['class']).show();
                 },
                 hideToggles = function() {
-                    $element.find('.'+plugin.settings.toggle['class']).removeClass('open').hide();
+                    $element.find('.'+plugin.settings.toggle['class']).removeClass(plugin.settings.toggle['openclass']).hide();
                 },
                 columns = [];
 
@@ -122,17 +123,17 @@
                 var $this = $(event.target),
                     parent = $this.parents('tr');
 
-                if (parent.hasClass('open')) {
-                    parent.removeClass('open')
+                if (parent.hasClass(plugin.settings.toggle['openclass'])) {
+                    parent.removeClass(plugin.settings.toggle['openclass'])
                         .next(toggle_box).remove();
 
-                    $this.removeClass('open');
+                    $this.removeClass(plugin.settings.toggle['openclass']);
 
                 } else {
                     buildOutput(parent);
 
-                    parent.addClass('open');
-                    $this.addClass('open');
+                    parent.addClass(plugin.settings.toggle['openclass']);
+                    $this.addClass(plugin.settings.toggle['openclass']);
                 }
             });
 
@@ -152,7 +153,7 @@
                     if (column.enabled && width > wrapper_width && window_width <= previous_window_width) {
                         hide.push(column.index);
 
-                        cells.addClass('hidden');
+                        cells.hide();
 
                         // Set the leave value
                         column.enabled = false;
@@ -164,7 +165,7 @@
                         // Remove the visible siblings
                         $element.find('div.' + column.sibling).remove();
 
-                        cells.removeClass('hidden');
+                        cells.show();
 
                         column.enabled = true;
                     }
@@ -174,10 +175,10 @@
                 if (hide.length) {
                     showToggles();
 
-                    var open = $element.find('tr.open');
+                    var open = $element.find('tr.'+plugin.settings.toggle['openclass']);
                     open.each(function() {
                         var row = $(this);
-                        row.find('.'+plugin.settings.toggle['class']).addClass('open');
+                        row.find('.'+plugin.settings.toggle['class']).addClass(plugin.settings.toggle['openclass']);
                         row.next(toggle_box).remove();
 
                         buildOutput(row);
@@ -191,7 +192,7 @@
 
                     if (colspan === columns.length) {
                         hideToggles();
-                        $element.children('tr').removeClass('open');
+                        $element.children('tr').removeClass(plugin.settings.toggle['openclass']);
                         boxes.remove();
                     } else {
                         boxes.children('td').attr('colSpan', colspan);
