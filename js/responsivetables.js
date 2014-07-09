@@ -123,6 +123,52 @@
                 return a.order - b.order;
             });
 
+
+
+
+
+
+
+
+
+
+
+            function colspanner() {
+                var colspancells = [];
+
+                $('td[colspan]').each(function() {
+                    colspancells.push(this);
+                });
+
+                $.each(colspancells, function(index) {
+                    var colspanamount = parseInt($(this).attr('colSpan'));
+                    var allcells = headers.filter(':visible').length;
+                    var tdindex = $(this).index();
+                    var diffrence = (tdindex+colspanamount)-allcells;
+
+                    console.log(tdindex, colspanamount, allcells, diffrence);
+
+                    if ( diffrence >= 1 ) {
+                        $(this).attr('colSpan', colspanamount-diffrence);
+                    }
+
+                });
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             // Toggle area on mouse click
             $element.on('click', '.'+plugin.settings.toggle['class'], function(event) {
                 var $this = $(event.target),
@@ -215,6 +261,7 @@
             }
 
             toggleCells();
+            colspanner();
 
             // Run again on window resize
             $(window).on('resize', plugin.debounce(toggleCells, 200));

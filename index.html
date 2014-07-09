@@ -35,16 +35,53 @@
             <th>Second2Second2</th>
             <th>Second3Second3</th>
             <th>Second4Second4</th>
+            <th>Second5Second5</th>
+            <th>Second6Second6</th>
+            <th>Second7Second7</th>
         </tr>
         <tr>
             <td>Content1</td>
             <td>Content2</td>
             <td>Content3</td>
             <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td colspan="4">Content2 + 3 + 4 + 5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td colspan="7">Content1 tm 7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2</td>
+            <td>Content3</td>
+            <td>Content4</td>
+            <td colspan="3">Content7</td>
+        </tr>
+        <tr>
+            <td colspan="3">Content1 + 2 + 3</td>
+            <td>Content4</td>
+            <td>Content5</td>
+            <td>Content6</td>
+            <td>Content7</td>
+        </tr>
+        <tr>
+            <td>Content1</td>
+            <td>Content2</td>
+            <td>Content3</td>
+            <td colspan="2">Content4 + 5</td>
+            <td>Content6</td>
+            <td>Content7</td>
         </tr>
     </table>
 
-    <table class="responsive-table">
+    <table class="responsive-table" style="display: none;">
         <tr>
             <th>Header1</th>
             <th data-has-toggle>Header2</th>
@@ -572,7 +609,7 @@
     </table>
 
 
-    <table class="responsive-table2">
+    <table class="responsive-table2" style="display: none;">
         <tr>
             <th>Second1</th>
             <th data-toggle-order="2">Second2</th>
@@ -955,8 +992,8 @@
 <script src="js/responsivetables.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-        $('.responsive-table').responsiveTable();
-        $('.responsive-table2').responsiveTable();
+        //$('.responsive-table').responsiveTable();
+        //$('.responsive-table2').responsiveTable();
         $('.responsive-table3').responsiveTable();
     });
 </script>

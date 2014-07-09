@@ -86,6 +86,14 @@ p {
   margin-bottom: 10px;
 }
 
+td[colspan] {
+  background: #eee;
+}
+
+td[colspan]:after {
+  content: " - colspan: " attr(colspan);
+}
+
 
 
 
