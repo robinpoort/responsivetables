@@ -62,7 +62,7 @@
         };
 
         plugin.init = function() {
-            plugin.settings = $.extend({}, defaults, options);
+            plugin.settings = $.extend(true, {}, defaults, options);
 
             // Wrap the table in a div initially and setting necessary table styles
             $element.wrap('<div class="' + plugin.settings.wrapper['class'] + '" style="overflow:hidden;"></div>').css({'position': plugin.settings.wrapper.position, 'width': '100%'});
