@@ -69,10 +69,12 @@
                     title   = headers.eq(index).text(), // Only copy the text (so no sorting arrows etc.)
                     klass   = 'td'+(index+1);
 
-                if ( title != '' ) {
+                if ( title != '' && content != '' ) {
                     output[index] = '<div class="'+klass+'"><strong>'+title+'</strong><br />'+content+'</div>';
-                } else {
+                } else if ( content != '' ) {
                     output[index] = '<div class="'+klass+'">'+content+'</div>';
+                } else {
+                    output[index] = '';
                 }
             });
 
