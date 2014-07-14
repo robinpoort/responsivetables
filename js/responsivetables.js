@@ -9,6 +9,29 @@
 
 (function($) {
 
+    $.fn.getNonColSpanIndex = function() {
+        if(! $(this).is('td') && ! $(this).is('th'))
+            return -1;
+
+        var allCells = this.parent('tr').children();
+        var normalIndex = allCells.index(this);
+        var nonColSpanIndex = 0;
+
+        allCells.each(
+            function(i, item)
+            {
+                if(i == normalIndex)
+                    return false;
+
+                var colspan = $(this).attr('colspan');
+                colspan = colspan ? parseInt(colspan) : 1;
+                nonColSpanIndex += colspan;
+            }
+        );
+
+        return nonColSpanIndex;
+    };
+
     $.responsiveTable = function(element, options) {
         var defaults = {
                 wrapper: {
@@ -146,7 +169,7 @@
                     var tdindex = $(this).index();
                     var diffrence = (tdindex+colspanamount)-allcells;
 
-                    console.log(tdindex, colspanamount, allcells, diffrence);
+                    //console.log(tdindex, colspanamount, allcells, diffrence);
 
                     if ( diffrence >= 1 ) {
                         $(this).attr('colSpan', colspanamount-diffrence);
@@ -154,6 +177,7 @@
 
                 });
             }
+
 
 
 
@@ -198,6 +222,7 @@
                     show = [];
 
                 $.each(columns, function(index, column) {
+
                     var width = $element.width(),
                         wrapper_width = wrapper.outerWidth(),
                         cells = $element.find('tr > :nth-child('+ column.index +')');
