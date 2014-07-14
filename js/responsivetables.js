@@ -210,7 +210,7 @@
 
                     $this.removeClass(plugin.settings.toggle['openclass']);
 
-                } else {
+                } else if ( parent.children('td:hidden').length ) {
                     buildOutput(parent);
 
                     parent.addClass(plugin.settings.toggle['openclass']);
