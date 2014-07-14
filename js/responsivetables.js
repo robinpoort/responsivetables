@@ -124,11 +124,12 @@
                 hideToggles = function() {
                     $element.find('.'+plugin.settings.toggle['class']).removeClass(plugin.settings.toggle['openclass']).hide();
                 },
+                donttoggle = $('[data-has-toggle], [data-dont-toggle]').length,
                 columns = [];
 
             headers.each(function(index) {
                 var $this = $(this),
-                    order = $this.is('[data-has-toggle]') ? '1000' : $this.attr('data-toggle-order');
+                    order = $this.is('[data-has-toggle], [data-dont-toggle]') ? '1000' : $this.attr('data-toggle-order');
 
                 if (order == undefined) {
                     order = '999';
@@ -149,7 +150,6 @@
             columns = columns.slice(0).reverse().sort(function(a, b) {
                 return a.order - b.order;
             });
-
 
 
 
@@ -219,8 +219,7 @@
             // The actual function
             function toggleCells() {
                 // Setting vars inside function
-                var window_width = $(window).width(),
-                    visibleheaders = headers.filter(':visible').length;
+                var window_width = $(window).width();
 
                 var hide = [],
                     show = [];
@@ -231,7 +230,7 @@
                         wrapper_width = wrapper.outerWidth(),
                         cells = $element.find('tr > :nth-child('+ column.index +')');
 
-                    if (column.enabled && width > wrapper_width && window_width <= previous_window_width && visibleheaders > 1) {
+                    if (column.enabled && width > wrapper_width && window_width <= previous_window_width && column.order != 1000 ) {
                         hide.push(column.index);
 
                         cells.hide();
@@ -239,6 +238,7 @@
                         // Set the leave value
                         column.enabled = false;
                         column.leave = $element.outerWidth();
+
                     }
                     else if (!column.enabled && wrapper_width >= (column.leave + column.width - 10)) {
                         show.push(column.index);
@@ -252,8 +252,11 @@
                     }
                 });
 
-                // Set wrapper to overflow when there's only one column left
-                if (visibleheaders==1) {
+                // Setting vars after removing columns
+                var visibleheaders = headers.filter(':visible').length;
+
+                // Set wrapper to overflow
+                if (visibleheaders==donttoggle) {
                     wrapper.css('overflow', 'auto');
                 }
 
