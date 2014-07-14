@@ -114,9 +114,14 @@
                     if (toggles_added === false) {
                         var toggle  = headers.filter('[data-has-toggle]'),
                             toggle_index = toggle.length ? toggle[0].cellIndex : 0,
-                            cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +') '+plugin.settings.toggle['element']);
+                            cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')').siblings(':hidden'),
+                            togglecells = cells.siblings(':nth-child('+ (toggle_index+1) +')');
 
-                        cells.prepend('<div class="'+plugin.settings.toggle['class']+'">'+plugin.settings.toggle.text+'</div>');
+                        if ( plugin.settings.toggle['element'] != '' ) {
+                            togglecells = cells.siblings(':nth-child('+ (toggle_index+1) +')').find(plugin.settings.toggle['element']);
+                        }
+
+                        togglecells.prepend('<div class="'+plugin.settings.toggle['class']+'">'+plugin.settings.toggle.text+'</div>');
 
                         toggles_added = true;
                     }
