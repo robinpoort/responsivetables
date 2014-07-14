@@ -38,6 +38,10 @@
                     'class': 'rttablewrapper',
                     'position': 'relative'
                 },
+                table: {
+                    'initiatedclass': 'rttable--initiated',
+                    'activetoggleclass': 'rttable--active_toggle'
+                },
                 toggle_box: {
                     'class': 'rttoggle_box'
                 },
@@ -93,7 +97,7 @@
             plugin.settings = $.extend(true, {}, defaults, options);
 
             // Wrap the table in a div initially and setting necessary table styles
-            $element.wrap('<div class="' + plugin.settings.wrapper['class'] + '" style="overflow:hidden;"></div>').css({'position': plugin.settings.wrapper.position, 'width': '100%'});
+            $element.addClass(plugin.settings.table['initiatedclass']).wrap('<div class="' + plugin.settings.wrapper['class'] + '" style="overflow:hidden;"></div>').css({'position': plugin.settings.wrapper.position, 'width': '100%'});
 
             // Setting vars
             var previous_window_width = $(window).width(),
@@ -265,6 +269,8 @@
 
                         buildOutput(row);
                     });
+
+                    $element.addClass(plugin.settings.table['activetoggleclass']);
                 }
 
                 // Set the colspan and hide the toggle area if possible
@@ -276,6 +282,7 @@
                         hideToggles();
                         $element.children('tr').removeClass(plugin.settings.toggle['openclass']);
                         boxes.remove();
+                        $element.removeClass(plugin.settings.table['activetoggleclass']);
                     } else {
                         boxes.children('td').attr('colSpan', colspan);
                     }
