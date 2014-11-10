@@ -46,7 +46,7 @@
                     'class': 'rttoggle_box'
                 },
                 toggle: {
-                    'element': '',
+                    'element': 'button',
                     'class': 'rttoggler',
                     'openclass': 'rtopen',
                     'text': '&raquo;'
@@ -115,13 +115,14 @@
                         var toggle  = headers.filter('[data-has-toggle]'),
                             toggle_index = toggle.length ? toggle[0].cellIndex : 0,
                             cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')').siblings(':hidden'),
-                            togglecells = cells.siblings(':nth-child('+ (toggle_index+1) +')');
+                            togglecells = cells.siblings(':nth-child('+ (toggle_index+1) +')'),
+                            attributes;
 
-                        if ( plugin.settings.toggle['element'] != '' ) {
-                            togglecells = cells.siblings(':nth-child('+ (toggle_index+1) +')').find(plugin.settings.toggle['element']);
+                        if (plugin.settings.toggle['element'] == 'button') {
+                            attributes = ' aria-hidden="true" aria-pressed="false"';
                         }
 
-                        togglecells.prepend('<div class="'+plugin.settings.toggle['class']+'">'+plugin.settings.toggle.text+'</div>');
+                        togglecells.prepend('<'+plugin.settings.toggle['element']+' class="'+plugin.settings.toggle['class']+'"'+attributes+'>'+plugin.settings.toggle.text+'</'+plugin.settings.toggle['element']+'>');
 
                         toggles_added = true;
                     }
