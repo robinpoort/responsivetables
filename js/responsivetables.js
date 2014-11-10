@@ -116,7 +116,7 @@
                             toggle_index = toggle.length ? toggle[0].cellIndex : 0,
                             cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')').siblings(':hidden'),
                             togglecells = cells.siblings(':nth-child('+ (toggle_index+1) +')'),
-                            attributes;
+                            attributes = '';
 
                         if (plugin.settings.toggle['element'] == 'button') {
                             attributes = ' aria-hidden="true" aria-pressed="false"';
