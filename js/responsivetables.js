@@ -168,15 +168,18 @@
 
                 $.each(colspancells, function(index) {
                     var getcolspan = $(this).attr('colSpan');
-                    var firstspan = $(this).getNonColSpanIndex() + 1;
-                    var lastspan = parseInt(firstspan) + parseInt(getcolspan) - 1;
+                    var truecolspan = $(this).getNonColSpanIndex() + 1;
 
                     // Set index data attribute
-                    $(this).attr('data-index', firstspan);
+                    $(this).attr('data-index', truecolspan);
 
                     // Set last span if applicable
                     if (getcolspan) {
-                        $(this).attr('data-index-last', lastspan);
+                        var range = [];
+                        for( var i = 0; i < getcolspan; i++ ) {
+                            range.push(i + parseInt(truecolspan));
+                        }
+                        $(this).attr('data-index-range', range);
                     }
                 });
             }
@@ -210,11 +213,13 @@
 
                 $.each(columns, function(index, column) {
 
+                    var indexno = $('.indexno');
+
                     var width = $element.width(),
                         wrapper_width = wrapper.outerWidth(),
                         cells = $element.find('tr:not(:has([colspan])) > :nth-child('+ column.index +')'),
-                        singlecells = $element.find('tr > td[data-index="'+column.index+'"]:not([colspan]), tr > td[data-index-last][colspan=1]:not([data-index="'+column.index+'"]):not([data-index-last="'+column.index+'"])'),
-                        affectedcells = $element.find('tr > td[data-index-last]');
+                        singlecells = $element.find('tr > td[data-index="'+column.index+'"]:not([colspan]), tr > td[data-index-range*="'+column.index+'"][colspan=1], tr > td[data-index-range*="'+column.index+'"][colspan=0]'),
+                        affectedcells = $element.find('tr > td[data-index-range]');
 
                     // Rebuild cells
                     cells = cells.add(singlecells);
@@ -224,9 +229,11 @@
 
                         cells.hide();
 
+                        indexno.text(column.index);
+
                         // Re-set colspan on colspan cells
                         affectedcells.each(function() {
-                            if ( column.index >= $(this).attr('data-index') && column.index <= $(this).attr('data-index-last') ) {
+                            if ( $(this).attr('data-index-range').indexOf(column.index) >= 0) {
                                 var colspan = parseInt($(this).attr('colSpan'));
                                 if ( colspan >= 1) {
                                     $(this).attr('colSpan', colspan - 1);
@@ -247,7 +254,7 @@
 
                         // Re-set colspan on colspan cells
                         affectedcells.each(function() {
-                            if ( column.index >= $(this).attr('data-index') && column.index <= $(this).attr('data-index-last') ) {
+                            if ( $(this).attr('data-index-range').indexOf(column.index) >= 0) {
                                 var colspan = parseInt($(this).attr('colSpan'));
                                 if ( colspan <= columns.length) {
                                     $(this).attr('colSpan', colspan + 1);
