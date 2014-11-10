@@ -59,7 +59,7 @@
 
         plugin.buildOutput = function(row, headers) {
             var output  = [],
-                colspan = row.find('td:visible').length,
+                colspan = headers.filter(':visible').length,
                 html;
 
             row.find('td:hidden').each(function() {
