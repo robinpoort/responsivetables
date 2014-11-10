@@ -86,12 +86,17 @@ p {
   margin-bottom: 10px;
 }
 
-td[colspan] {
+td[colspan],
+td[rowspan] {
   background: #eee;
 }
 
 td[colspan]:after {
   content: " - colspan: " attr(colspan);
+}
+
+td[rowspan]:after {
+  content: " - rowspan: " attr(rowspan);
 }
 
 
