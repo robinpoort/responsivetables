@@ -158,7 +158,15 @@
                 return a.order - b.order;
             });
 
-            // Adding data attributes to cells within rows that have colspan cells
+
+
+
+
+
+
+
+
+
             function colspanner() {
                 var colspancells = [];
 
@@ -167,19 +175,25 @@
                 });
 
                 $.each(colspancells, function(index) {
-                    var getcolspan = $(this).attr('colSpan');
-                    var firstspan = $(this).getNonColSpanIndex() + 1;
-                    var lastspan = parseInt(firstspan) + parseInt(getcolspan) - 1;
-
-                    // Set index data attribute
-                    $(this).attr('data-index', firstspan);
-
-                    // Set last span if applicable
-                    if (getcolspan) {
-                        $(this).attr('data-index-last', lastspan);
-                    }
+                    var trueindex = $(this).getNonColSpanIndex() + 1;
+                    $(this).attr('data-index', trueindex);
                 });
             }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             // Toggle area on mouse click
             $element.on('click', '.'+plugin.settings.toggle['class'], function(event) {
@@ -200,9 +214,14 @@
                 }
             });
 
+
+
+
+
+
             // The actual function
             function toggleCells() {
-                // Setting vars inside function
+                // Setting variables inside function
                 var window_width = $(window).width();
 
                 var hide = [],
@@ -212,27 +231,20 @@
 
                     var width = $element.width(),
                         wrapper_width = wrapper.outerWidth(),
-                        cells = $element.find('tr:not(:has([colspan])) > :nth-child('+ column.index +')'),
-                        singlecells = $element.find('tr > td[data-index="'+column.index+'"]:not([colspan]), tr > td[data-index-last][colspan=1]:not([data-index="'+column.index+'"]):not([data-index-last="'+column.index+'"])'),
-                        affectedcells = $element.find('tr > td[data-index-last]');
+                        cells = $element.find('tr > td:nth-child('+ column.index +')');
 
-                    // Rebuild cells
-                    cells = cells.add(singlecells);
+                    var cells = $element.find('tr:not(:has([colspan])) > td:nth-child('+ column.index +')'),
+                    cells = cells.add($element.find('tr > td[data-index="'+column.index+'"]'));
+
+
+
+
+
 
                     if (column.enabled && width > wrapper_width && window_width <= previous_window_width && column.order != 1000 ) {
                         hide.push(column.index);
 
                         cells.hide();
-
-                        // Re-set colspan on colspan cells
-                        affectedcells.each(function() {
-                            if ( column.index >= $(this).attr('data-index') && column.index <= $(this).attr('data-index-last') ) {
-                                var colspan = parseInt($(this).attr('colSpan'));
-                                if ( colspan >= 1) {
-                                    $(this).attr('colSpan', colspan - 1);
-                                }
-                            }
-                        });
 
                         // Set the leave value
                         column.enabled = false;
@@ -244,16 +256,6 @@
 
                         // Remove the visible siblings
                         $element.find('div.' + column.sibling).remove();
-
-                        // Re-set colspan on colspan cells
-                        affectedcells.each(function() {
-                            if ( column.index >= $(this).attr('data-index') && column.index <= $(this).attr('data-index-last') ) {
-                                var colspan = parseInt($(this).attr('colSpan'));
-                                if ( colspan <= columns.length) {
-                                    $(this).attr('colSpan', colspan + 1);
-                                }
-                            }
-                        });
 
                         cells.show();
 
