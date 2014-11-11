@@ -46,6 +46,7 @@
                     'class': 'rttoggle_box'
                 },
                 toggle: {
+                    'selector': '',
                     'element': 'button',
                     'class': 'rttoggler',
                     'openclass': 'rtopen',
@@ -117,6 +118,10 @@
                             cells = $element.find('tr > td:nth-child('+ (toggle_index+1) +')').siblings(':hidden'),
                             togglecells = cells.siblings(':nth-child('+ (toggle_index+1) +')'),
                             attributes = '';
+
+                        if ( plugin.settings.toggle['selector'] != '' ) {
+                            togglecells = cells.siblings(':nth-child('+ (toggle_index+1) +')').find(plugin.settings.toggle['selector']);
+                        }
 
                         if (plugin.settings.toggle['element'] == 'button') {
                             attributes = ' aria-hidden="true" aria-pressed="false"';
