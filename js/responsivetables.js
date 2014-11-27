@@ -123,6 +123,9 @@
                         if (plugin.settings.toggle['element'] == 'button') {
                             attributes = ' aria-hidden="true" aria-pressed="false"';
                         }
+                        else if (plugin.settings.toggle['element'] == 'a') {
+                            attributes = ' href="#"';
+                        }
 
                         togglecells.prepend('<'+plugin.settings.toggle['element']+' class="'+plugin.settings.toggle['class']+'"'+attributes+'>'+plugin.settings.toggle.text+'</'+plugin.settings.toggle['element']+'>');
 
@@ -165,6 +168,8 @@
             $element.on('click', '.'+plugin.settings.toggle['class'], function(event) {
                 var $this = $(event.target),
                     parent = $this.parents('tr');
+
+                event.preventDefault();
 
                 if (parent.hasClass(plugin.settings.toggle['openclass'])) {
                     parent.removeClass(plugin.settings.toggle['openclass'])
