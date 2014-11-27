@@ -9,27 +9,24 @@
 
 (function($) {
 
-    $.fn.getNonColSpanIndex = function() {
-        if(! $(this).is('td') && ! $(this).is('th'))
-            return -1;
+    var getNonColspanIndex = function(element) {
+        var index = -1;
 
-        var allCells = this.parent('tr').children();
-        var normalIndex = allCells.index(this);
-        var nonColSpanIndex = 0;
+        if(element.is('td') || element.is('th')) {
+            index = 0;
+            var cells = element.parent('tr').children(),//siblings(),
+                self_index = cells.index(element);
 
-        allCells.each(
-            function(i, item)
-            {
-                if(i == normalIndex)
+            cells.each(function(i) {
+                if (i == self_index) {
                     return false;
+                }
 
-                var colspan = $(this).attr('colspan');
-                colspan = colspan ? parseInt(colspan) : 1;
-                nonColSpanIndex += colspan;
-            }
-        );
+                index += parseInt($(this).attr('colspan') || 1);
+            });
+        }
 
-        return nonColSpanIndex;
+        return index;
     };
 
     $.responsiveTable = function(element, options) {
@@ -164,32 +161,6 @@
                 return a.order - b.order;
             });
 
-            // Adding data attributes to cells within rows that have colspan cells
-            function colspanner() {
-                var colspancells = [];
-
-                $('tr:has([colspan]) td').each(function() {
-                    colspancells.push(this);
-                });
-
-                $.each(colspancells, function(index) {
-                    var getcolspan = $(this).attr('colSpan');
-                    var truecolspan = $(this).getNonColSpanIndex() + 1;
-
-                    // Set index data attribute
-                    $(this).attr('data-index', truecolspan);
-
-                    // Set last span if applicable
-                    if (getcolspan) {
-                        var range = [];
-                        for( var i = 0; i < getcolspan; i++ ) {
-                            range.push(i + parseInt(truecolspan));
-                        }
-                        $(this).attr('data-index-range', range);
-                    }
-                });
-            }
-
             // Toggle area on mouse click
             $element.on('click', '.'+plugin.settings.toggle['class'], function(event) {
                 var $this = $(event.target),
@@ -206,6 +177,25 @@
 
                     parent.addClass(plugin.settings.toggle['openclass']);
                     $this.addClass(plugin.settings.toggle['openclass']);
+                }
+            });
+
+            // Adding data attributes to cells within rows that have colspan cells
+            $element.find('tr:has([colspan]) td').each(function() {
+                var $this = $(this),
+                    colspan = $this.attr('colSpan'),
+                    true_colspan = getNonColspanIndex($this) + 1;
+
+                // Set index data attribute
+                $this.attr('data-index', true_colspan);
+
+                // Set last span if applicable
+                if (colspan) {
+                    var range = [];
+                    for( var i = 0; i < colspan; i++ ) {
+                        range.push(i + parseInt(true_colspan));
+                    }
+                    $this.attr('data-index-range', range);
                 }
             });
 
@@ -317,7 +307,6 @@
                 previous_window_width = window_width;
             }
 
-            colspanner();
             toggleCells();
 
             // Run again on window resize
